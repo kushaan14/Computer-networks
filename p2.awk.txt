@@ -1,0 +1,36 @@
+BEGIN{
+	numTCP1 = 0;
+	sizeTCP1 = 0;
+	numTCP2 = 0;
+	sizeTCP2 = 0;
+	totTCP1 = 0;
+	totTCP2 = 0;
+}
+{
+  event=$1;
+  t=$2;
+  pkttype=$5;
+  pktsize=$6;
+  from=$9;
+  to=$10;
+
+  if(event="r" && pkttype="tcp" && from="0.0" && to="3.0")
+  {
+    numTCP1++;
+    sizeTCP1 = pktsize;
+  }
+
+  if(event="r" && pkttype="tcp" && from="1.0" && to="3.1")
+  {
+    numTCP2++;
+    sizeTCP2 = pktsize;
+  }
+
+}
+END{
+  totTCP1 = numTCP1*sizeTCP1*8;
+  totTCP2 = numTCP2*sizeTCP2*8;
+
+  printf("Throughput of FTP is : %d\n",totTCP1/24);
+  printf("Throughput of Telnet is : %d\n",totTCP2/24);
+}

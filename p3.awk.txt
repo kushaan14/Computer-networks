@@ -1,0 +1,17 @@
+BEGIN{
+  udpkts=0;
+  tcppkts=0;
+}
+{
+  event=$5;
+
+  if(event="udp")
+   udppkts++;
+
+  if(event="tcp")
+   tcppkts++;
+}
+END{
+ printf("Total no.of udp packets are %d",udppkts);
+ printf("Total no.of tcp packets are %d",tcppkts);
+}

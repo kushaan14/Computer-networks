@@ -1,0 +1,67 @@
+set ns [new Simulator]
+
+set namfile [open out.nam w]
+$ns namtrace-all $namfile
+
+set tracefile [open trace1.tr w]
+$ns trace-all $tracefile
+
+proc finish { } {
+  	global ns namfile tracefile
+	$ns flush-trace
+	close $namfile
+	close $tracefile
+	exec nam out.nam &
+	exit 0
+}
+
+set n0 [$ns node]
+set n1 [$ns node]
+set n2 [$ns node]
+set n3 [$ns node]
+
+$n0 color red
+$n1 color green
+$n2 color yellow
+$n3 color blue
+
+$ns color 1 blue
+
+$n0 label TCP
+$n1 label UDP
+$n3 label SINK-NULL
+
+$ns duplex-link $n0 $n2 1Mb 10ms DropTail
+$ns duplex-link $n1 $n2 1Mb 10ms DropTail
+$ns duplex-link $n2 $n3 1Mb 10ms DropTail
+
+set tcp [new Agent/TCP]
+$ns attach-agent $n0 $tcp
+set sink [new Agent/TCPSink]
+$ns attach-agent $n3 $sink
+$ns connect $tcp $sink
+$tcp set fid_ 1
+
+set ftp [new Application/FTP]
+$ftp attach-agent $tcp
+
+set udp [new Agent/UDP]
+$ns attach-agent $n1 $udp
+set nullsink [new Agent/Null]
+$ns attach-agent $n3 $nullsink
+$ns connect $udp $nullsink 
+
+set cbr [new Application/Traffic/CBR]
+$cbr set packetSize_ 500
+$cbr set interval_ 0.005
+$cbr attach-agent $udp
+
+$ns at 0.1 "$ftp start"
+$ns at 0.2 "$cbr start"
+$ns at 4.4 "$ftp stop"
+$ns at 4.5 "$cbr stop"
+$ns at 5.0 "finish"
+
+$ns run
+
+

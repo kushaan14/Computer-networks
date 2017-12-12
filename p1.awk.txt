@@ -1,0 +1,18 @@
+BEGIN{
+   pktdrp=0;
+   pktrecv=0;
+}
+{
+  event=$1;
+
+  if(event=="d")
+   pktdrp++;
+
+  if(event=="r")
+   pktrecv++;
+
+}
+END{
+  printf("Dropped packets are : %d",pktdrp);
+  printf("Received packets are : %d",pktrecv);
+}
